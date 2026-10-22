@@ -1,0 +1,6 @@
+/target/
+/.local/
+/dist/
+*.tmp
+__pycache__/
+*.pyc
