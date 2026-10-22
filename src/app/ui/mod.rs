@@ -344,12 +344,12 @@ impl Studio {
         let has_model = self.model.is_some();
         let size = self.config.output_size;
         let closed = self.output_closed.clone();
-        let screenshot = if !self.output_screenshot_requested
+        let screenshot_requested = self.output_screenshot_requested.clone();
+        let screenshot = if !screenshot_requested.load(std::sync::atomic::Ordering::Relaxed)
             && self.loading.is_none()
             && self.started.elapsed() > Duration::from_secs(3)
             && let Some(original) = self.launch.screenshot.as_ref()
         {
-            self.output_screenshot_requested = true;
             let stem = original.file_stem().unwrap_or_default().to_string_lossy();
             Some((
                 original.with_file_name(format!("{stem}-output.png")),
@@ -358,7 +358,6 @@ impl Studio {
         } else {
             None
         };
-        let screenshot = Arc::new(std::sync::Mutex::new(screenshot));
         // A deferred viewport owns its repaint/capture lifecycle, allowing the
         // broadcast window to keep painting when the control window is obscured.
         ctx.show_viewport_deferred(
@@ -391,7 +390,13 @@ impl Studio {
                             );
                         }
                     });
-                if let Some((path, done)) = screenshot.lock().expect("screenshot latch").take() {
+                // The control UI can replace this deferred callback before it
+                // runs. Claim the shared request only when the output runs it.
+                if let Some((path, done)) = &screenshot
+                    && !screenshot_requested.swap(true, std::sync::atomic::Ordering::Relaxed)
+                {
+                    let path = path.clone();
+                    let done = done.clone();
                     ui.ctx()
                         .send_viewport_cmd(egui::ViewportCommand::Screenshot(
                             egui::ScreenshotCallback::new(move |image| {

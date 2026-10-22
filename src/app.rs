@@ -69,7 +69,7 @@ pub struct Studio {
     started: Instant,
     screenshot_requested: bool,
     screenshot_done: Arc<std::sync::atomic::AtomicBool>,
-    output_screenshot_requested: bool,
+    output_screenshot_requested: Arc<std::sync::atomic::AtomicBool>,
     output_screenshot_done: Arc<std::sync::atomic::AtomicBool>,
 }
 
@@ -136,7 +136,7 @@ impl Studio {
             started: Instant::now(),
             screenshot_requested: false,
             screenshot_done: Arc::new(std::sync::atomic::AtomicBool::new(false)),
-            output_screenshot_requested: false,
+            output_screenshot_requested: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             output_screenshot_done: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             launch,
         };

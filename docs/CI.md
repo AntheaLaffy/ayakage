@@ -4,15 +4,18 @@
 
 ## 必需检查
 
-每个 PR、main 推送、周一 03:23 UTC 定时检查及手动运行都会执行完整 CI，不按文件路径跳过。发布复用同一份工作流。
+PR 与 main 推送先比较实际 Git 差异。只修改根目录使用 / 开发 / 许可说明、更新记录、`talk.md`、各级 `CODEMAP.md`、`docs/**/*.md`、PR 模板或字体 README 时，仅运行轻量 `scope` 与 `required`，跳过 Rust、GPU、窗口和打包任务。文档与代码混改、依赖、工作流、构建配置及未知路径均运行完整 CI；删除或把代码重命名为文档也不会获得豁免。
+
+保留轻量工作流是为了让受保护分支获得必需的检查状态，避免整个工作流被路径过滤跳过后一直等待。分类或 Git 历史读取失败时不会放行豁免。周一 03:23 UTC 定时、手动运行及版本发布始终运行完整 CI，发布显式强制全套检查。
 
 | 检查 | 环境 | 通过条件 |
 | --- | --- | --- |
+| `scope` | Ubuntu 24.04、Python / Git | 验证文档分类的回归用例，再判断本次差异 |
 | `quality` | Ubuntu 24.04、固定 Rust 工具链 | `cargo fmt --check`、Python 语法检查、固定版本 actionlint |
 | `test (1.95.0)` | Ubuntu 24.04、最低支持 Rust | `cargo test --locked`，包括真实 localhost UDP 测试 |
 | `test (1.98.1)` | Ubuntu 24.04、发布工具链 | 同上，以及 Clippy 全 targets、警告作为错误 |
 | `linux` | Ubuntu 22.04、Mesa 软件 Vulkan、Xvfb | release 打包；解压后检查许可、源码、版本、校验和与 glibc ≤ 2.35；真实模型 GPU / UDP 验证；透明 / 绿幕双窗口截图及重启恢复 |
-| `required` | 汇总 | 上述每项均成功；失败、取消或跳过都不放行 |
+| `required` | 汇总 | 分类成功；完整检查要求每项成功，文档模式要求重任务明确跳过；失败或取消不放行 |
 
 模型固定为 Mocari 仓库提交 `13c7ed3c1e6471bcc1aacf5e7d3fdb1d038ed759` 的 Haru，独立下载到忽略目录，仅用于测试。测试使用软件 GPU 和合成面捕输入；摄像头质量、原生 Wayland / PipeWire 捕获及 OBS 实录仍按 [验证记录](VERIFICATION.md) 在实际桌面验收。
 

@@ -16,6 +16,15 @@ tar -xzf kage-studio-0.1.0-linux-x86_64.tar.gz
 
 预编译包以 Ubuntu 22.04 / glibc 2.35 为基线，需要系统 Vulkan / OpenGL 驱动与桌面 Portal。模型和 OpenSeeFace 需自行准备。`0.x` 是实验性 MVP。
 
+Ubuntu / Debian 的常用运行库：
+
+```sh
+sudo apt install libxkbcommon0 libxkbcommon-x11-0 libwayland-client0 \
+  libx11-6 libxcursor1 libxi6 libxrandr2 libegl1 libgl1 libvulkan1
+```
+
+显卡驱动与 XDG Desktop Portal 使用桌面环境提供的版本；Mesa 软件 / 开源驱动可安装 `mesa-vulkan-drivers`。
+
 从源码运行：
 
 ```sh
@@ -44,7 +53,7 @@ cargo run --locked --release -- --model /path/to/Haru.model3.json --output
 Arch Linux 可安装以下构建依赖（已有 Rust 环境可保留）：
 
 ```sh
-sudo pacman -S --needed base-devel rustup pkgconf wayland libxkbcommon libx11 libxcursor libxi libxrandr mesa vulkan-intel noto-fonts-cjk
+sudo pacman -S --needed base-devel rustup pkgconf wayland libxkbcommon libxkbcommon-x11 libx11 libxcursor libxi libxrandr mesa vulkan-intel noto-fonts-cjk
 cargo build --locked --release
 ./target/release/kage-studio
 ```

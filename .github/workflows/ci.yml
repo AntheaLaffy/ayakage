@@ -9,6 +9,10 @@ on:
     - cron: '23 3 * * 1'
   workflow_dispatch:
   workflow_call:
+    inputs:
+      full:
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -22,7 +26,27 @@ env:
   CARGO_INCREMENTAL: '0'
 
 jobs:
+  scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify change classification
+        run: python3 -m unittest discover -s tools -p test_ci_scope.py
+      - id: scope
+        name: Select checks for this change
+        env:
+          FORCE_FULL: ${{ inputs.full || false }}
+        run: python3 tools/ci_scope.py
+
   quality:
+    needs: scope
+    if: needs.scope.outputs.full == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -44,6 +68,8 @@ jobs:
           "$RUNNER_TEMP/actionlint" -color
 
   test:
+    needs: scope
+    if: needs.scope.outputs.full == 'true'
     name: test (${{ matrix.rust }})
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -81,6 +107,8 @@ jobs:
         run: cargo clippy --locked --all-targets -- -D warnings
 
   linux:
+    needs: scope
+    if: needs.scope.outputs.full == 'true'
     # Keep the portable executable's glibc baseline at Ubuntu 22.04 / 2.35.
     runs-on: ubuntu-22.04
     timeout-minutes: 40
@@ -97,7 +125,7 @@ jobs:
           sudo apt-get install --no-install-recommends -y \
             pkg-config libwayland-dev libxkbcommon-dev libx11-dev \
             libxcursor-dev libxi-dev libxrandr-dev libegl1-mesa-dev \
-            mesa-vulkan-drivers xvfb xauth python3-pil
+            libxkbcommon-x11-0 mesa-vulkan-drivers xvfb xauth python3-pil
           install -d -m 700 "$RUNNER_TEMP/kage-runtime"
           printf 'XDG_RUNTIME_DIR=%s/kage-runtime\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -146,7 +174,7 @@ jobs:
 
   required:
     if: always()
-    needs: [quality, test, linux]
+    needs: [scope, quality, test, linux]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -157,8 +185,14 @@ jobs:
           python3 - <<'PY'
           import json, os
           results = json.loads(os.environ['RESULTS'])
-          failed = {name: job['result'] for name, job in results.items() if job['result'] != 'success'}
+          scope = results['scope']
+          if scope['result'] != 'success' or scope['outputs'].get('full') not in ('true', 'false'):
+              raise SystemExit('Change classification failed; refusing to bypass checks.')
+          full = scope['outputs']['full'] == 'true'
+          expected = 'success' if full else 'skipped'
+          failed = {name: job['result'] for name, job in results.items()
+                    if name != 'scope' and job['result'] != expected}
           if failed:
               raise SystemExit(f'Required checks did not pass: {failed}')
-          print('All required checks passed.')
+          print('All required checks passed.' if full else 'Documentation only; build and runtime checks skipped.')
           PY

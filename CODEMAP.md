@@ -12,7 +12,7 @@ Kage Studio 是原生 Rust 应用，从 OpenSeeFace 的 UDP 输入驱动模型�
 
 | 路径 / 模式 | 处理 | 原因 |
 | --- | --- | --- |
-| `target/`, `.local/`, `dist/`, `*.tmp` | Excluded | `.gitignore` 中的编译、验证、分发产物及临时配置 |
+| `target/`, `.local/`, `dist/`, `.project-maintenance/`, `*.tmp` | Excluded | `.gitignore` 中的编译、验证、分发产物、维护指纹及临时配置 |
 | VCS / IDE 缓存、`Cargo.lock` | Excluded | 元数据 / 依赖锁文件；依赖改动仍需验证，不以排除作为正确性证据 |
 | `assets/` | Boundary only | 字体和许可证静态资源，运行时以编译期内嵌方式消费 |
 | `CODEMAP.md` / 子目录地图 | Excluded | 导航工件不重复纳入源文件清单 |
