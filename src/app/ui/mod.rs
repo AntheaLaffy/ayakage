@@ -28,17 +28,25 @@ impl Studio {
                     ui.painter().text(
                         rect.center(),
                         egui::Align2::CENTER_CENTER,
-                        "K",
+                        "A",
                         FontId::proportional(26.0),
                         BG,
                     );
                     ui.add_space(10.0);
                     ui.vertical(|ui| {
-                        ui.label(RichText::new("KAGE STUDIO").size(19.0).strong().color(TEXT));
                         ui.label(
-                            RichText::new("虚拟形象，自在开播。  /  0.1.0")
-                                .size(11.0)
-                                .color(MUTED),
+                            RichText::new(crate::PRODUCT_NAME)
+                                .size(19.0)
+                                .strong()
+                                .color(TEXT),
+                        );
+                        ui.label(
+                            RichText::new(format!(
+                                "让角色随你而动。  /  {}",
+                                env!("CARGO_PKG_VERSION")
+                            ))
+                            .size(11.0)
+                            .color(MUTED),
                         );
                     });
                     ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
@@ -361,10 +369,10 @@ impl Studio {
         // A deferred viewport owns its repaint/capture lifecycle, allowing the
         // broadcast window to keep painting when the control window is obscured.
         ctx.show_viewport_deferred(
-            egui::ViewportId::from_hash_of("kage-output"),
+            egui::ViewportId::from_hash_of("ayakage-output"),
             egui::ViewportBuilder::default()
-                .with_title("Kage Studio · Output")
-                .with_app_id("kage-studio-output")
+                .with_title(crate::OUTPUT_TITLE)
+                .with_app_id("ayaayakage-output")
                 .with_inner_size([size[0] as f32, size[1] as f32])
                 .with_min_inner_size([256.0, 144.0])
                 .with_transparent(true)
@@ -524,9 +532,9 @@ pub(super) fn setup_theme(ctx: &egui::Context) {
     ctx.set_theme(egui::ThemePreference::Dark);
     let mut fonts = egui::FontDefinitions::default();
     fonts.font_data.insert(
-        "kage-ui".into(),
+        "ayakage-ui".into(),
         Arc::new(egui::FontData::from_static(include_bytes!(
-            "../../../assets/fonts/KageUI.otf"
+            "../../../assets/fonts/AyakageUI.otf"
         ))),
     );
     for family in [egui::FontFamily::Proportional, egui::FontFamily::Monospace] {
@@ -534,7 +542,7 @@ pub(super) fn setup_theme(ctx: &egui::Context) {
             .families
             .entry(family)
             .or_default()
-            .push("kage-ui".into());
+            .push("ayakage-ui".into());
     }
     for path in [
         "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",

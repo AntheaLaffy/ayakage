@@ -37,7 +37,7 @@ def main():
     project = next(p for p in metadata["packages"] if Path(p["manifest_path"]) == root / "Cargo.toml")
     dist = root / "dist"
     dist.mkdir(exist_ok=True)
-    output = dist / f"kage-studio-linux-{platform.machine()}"
+    output = dist / f"ayakage-linux-{platform.machine()}"
     if output.is_symlink():
         raise RuntimeError(f"refusing to replace symlink: {output}")
 
@@ -45,7 +45,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="package-", dir=dist) as temporary:
         staging = Path(temporary) / output.name
         staging.mkdir()
-        shutil.copy2(Path(metadata["target_directory"]) / "release/kage-studio", staging / "kage-studio")
+        shutil.copy2(Path(metadata["target_directory"]) / "release/ayakage", staging / "ayakage")
         for name in (
             "README.md", "LICENSE", "THIRD_PARTY.md", "CONTRIBUTING.md", "CHANGELOG.md",
             "Cargo.toml", "Cargo.lock", "rust-toolchain.toml", "AGENTS.md", "CODEMAP.md",
@@ -80,7 +80,7 @@ def main():
             "version": project["version"],
             "source_commit": git_output(root, "rev-parse", "HEAD"),
             "source_dirty": bool(status) if status is not None else None,
-            "binary_sha256": sha256(staging / "kage-studio"),
+            "binary_sha256": sha256(staging / "ayakage"),
             "cargo_lock_sha256": sha256(staging / "Cargo.lock"),
             "host_arch": platform.machine(),
             "libc": platform.libc_ver(),
@@ -93,7 +93,7 @@ def main():
         shutil.move(staging, output)
 
     if args.archive:
-        archive = dist / f'kage-studio-{project["version"]}-linux-{platform.machine()}.tar.gz'
+        archive = dist / f'ayakage-{project["version"]}-linux-{platform.machine()}.tar.gz'
         with tarfile.open(archive, "w:gz") as bundle:
             bundle.add(output, arcname=output.name)
         (dist / "SHA256SUMS").write_text(f"{sha256(archive)}  {archive.name}\n", encoding="utf-8")

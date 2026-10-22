@@ -191,9 +191,28 @@ pub fn config_path() -> PathBuf {
         .map(PathBuf::from)
         .or_else(|| std::env::var_os("HOME").map(|home| PathBuf::from(home).join(".config")))
         .unwrap_or_else(|| PathBuf::from("."))
-        .join("kage-studio/settings.json")
+        .join("ayakage/settings.json")
 }
 impl Config {
+    pub fn load_startup(path: &Path, import_legacy: bool) -> Result<Self> {
+        if import_legacy
+            && !path.try_exists()?
+            && let Some(root) = path.parent().and_then(Path::parent)
+        {
+            let legacy = root.join("kage-studio/settings.json");
+            if legacy.try_exists()? {
+                fs::create_dir_all(path.parent().context("配置路径缺少父目录")?)?;
+                let temporary = path.with_extension("json.tmp");
+                // Retain the original as a backup; importing raw bytes also
+                // keeps malformed settings recoverable through the existing UI.
+                fs::copy(&legacy, &temporary)
+                    .with_context(|| format!("无法导入旧配置 {}", legacy.display()))?;
+                fs::rename(temporary, path)?;
+            }
+        }
+        Self::load(path)
+    }
+
     pub fn load(path: &Path) -> Result<Self> {
         if !path.exists() {
             return Ok(Self::default());
@@ -237,6 +256,49 @@ impl Config {
 mod tests {
     use super::*;
     #[test]
+    fn rename_imports_settings_once_and_preserves_original() {
+        let root = std::env::temp_dir().join(format!("ayakage-import-{}", std::process::id()));
+        let old = root.join("kage-studio/settings.json");
+        let new = root.join("ayakage/settings.json");
+        let original = Config {
+            background: Background::Green,
+            last_model: Some("/models/user.model3.json".into()),
+            ..Default::default()
+        };
+        original.save(&old).unwrap();
+        let bytes = fs::read(&old).unwrap();
+        let imported = Config::load_startup(&new, true).unwrap();
+        assert_eq!(imported.last_model, original.last_model);
+        assert_eq!(imported.background, Background::Green);
+        assert_eq!(fs::read(&old).unwrap(), bytes);
+        Config {
+            background: Background::Dark,
+            ..Default::default()
+        }
+        .save(&new)
+        .unwrap();
+        assert_eq!(
+            Config::load_startup(&new, true).unwrap().background,
+            Background::Dark
+        );
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn rename_preserves_invalid_settings_and_explicit_config_is_isolated() {
+        let root =
+            std::env::temp_dir().join(format!("ayakage-invalid-import-{}", std::process::id()));
+        let old = root.join("kage-studio/settings.json");
+        let new = root.join("ayakage/settings.json");
+        fs::create_dir_all(old.parent().unwrap()).unwrap();
+        fs::write(&old, b"{bad}").unwrap();
+        assert!(Config::load_startup(&new, false).is_ok());
+        assert!(!new.exists());
+        assert!(Config::load_startup(&new, true).is_err());
+        assert_eq!(fs::read(&old).unwrap(), b"{bad}");
+        assert_eq!(fs::read(&new).unwrap(), b"{bad}");
+        fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
     fn mapping_clamps_and_supports_inversion() {
         let mut mapping = Mapping::default();
         assert_eq!(mapping.value(90.0), 30.0);
@@ -248,7 +310,7 @@ mod tests {
     }
     #[test]
     fn config_round_trip_retains_model_mapping_and_hotkeys() {
-        let dir = std::env::temp_dir().join(format!("kage-config-test-{}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("ayakage-config-test-{}", std::process::id()));
         let path = dir.join("settings.json");
         let mut config = Config {
             last_model: Some(PathBuf::from("/models/a.model3.json")),
@@ -306,7 +368,7 @@ mod tests {
     #[test]
     fn malformed_config_is_reported_and_unchanged() {
         let path =
-            std::env::temp_dir().join(format!("kage-bad-config-{}.json", std::process::id()));
+            std::env::temp_dir().join(format!("ayakage-bad-config-{}.json", std::process::id()));
         fs::write(&path, b"{bad}").unwrap();
         assert!(Config::load(&path).is_err());
         assert_eq!(fs::read(&path).unwrap(), b"{bad}");

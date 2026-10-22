@@ -12,7 +12,7 @@ pub struct Control {
 impl Control {
     pub fn new(port: u16) -> Result<Self> {
         let socket = UdpSocket::bind((Ipv4Addr::LOCALHOST, port)).with_context(|| {
-            format!("无法打开本机快捷键接口 127.0.0.1:{port}；可能已有 Kage Studio 在运行")
+            format!("无法打开本机快捷键接口 127.0.0.1:{port}；可能已有 Ayakage 在运行")
         })?;
         socket.set_nonblocking(true)?;
         Ok(Self { socket })
@@ -67,7 +67,7 @@ pub fn send(command: &str, port: u16) -> Result<()> {
     let mut response = [0u8; 256];
     let length = socket
         .recv(&mut response)
-        .context("Kage Studio 没有响应，请先启动桌面应用")?;
+        .context("Ayakage 没有响应，请先启动桌面应用")?;
     anyhow::ensure!(
         &response[..length] == b"ok",
         "命令执行失败：{}",

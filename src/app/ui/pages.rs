@@ -412,7 +412,7 @@ impl Studio {
                 ui.add_space(10.0);
                 if primary(ui, if self.output { "关闭输出窗口" } else { "↗  打开输出窗口" }).clicked() { self.output = !self.output; }
                 ui.add_space(12.0);
-                ui.label("在 OBS 中添加「屏幕捕获 (PipeWire)」，选择 Kage Studio · Output 窗口。");
+                ui.label("在 OBS 中添加「屏幕捕获 (PipeWire)」，选择 Ayakage · Output 窗口。");
                 muted(ui, "透明是否保留取决于 Portal / OBS 捕获链路。若变成黑底，选绿幕背景，在 OBS 添加色度键滤镜，关键颜色选绿色。");
             }); ui.add_space(14.0);
             card(ui, |ui| {
@@ -426,7 +426,7 @@ impl Studio {
                 eyebrow(ui, "03 / WAYLAND 快捷键"); ui.add_space(12.0);
                 ui.label("全局快捷键可交给 niri，通过命令触发本机应用："); ui.add_space(8.0);
                 let options = if self.control.port() == crate::control::PORT { String::new() } else { format!(" --control-port {}", self.control.port()) };
-                ui.label(RichText::new(format!("kage-studio{options} --command calibrate\nkage-studio{options} --command toggle-tracking\nkage-studio{options} --command expression:表情名")).monospace().size(12.0));
+                ui.label(RichText::new(format!("ayakage{options} --command calibrate\nayakage{options} --command toggle-tracking\nayakage{options} --command expression:表情名")).monospace().size(12.0));
                 ui.add_space(10.0); muted(ui, "无需授予 /dev/input 权限。F5 校准 · F6 暂停追踪 · F7 复位舞台 · F8 清除表情。");
             }); ui.add_space(14.0);
             card(ui, |ui| {

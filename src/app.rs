@@ -84,16 +84,17 @@ impl Studio {
             .config_path
             .clone()
             .unwrap_or_else(config::config_path);
-        let (config, error, config_writable) = match Config::load(&path) {
-            Ok(config) => (config, None, true),
-            Err(error) => (
-                Config::default(),
-                Some(format!(
-                    "{error:#}。为保护原文件，自动保存已关闭；可在输出设置中备份并恢复。"
-                )),
-                false,
-            ),
-        };
+        let (config, error, config_writable) =
+            match Config::load_startup(&path, launch.config_path.is_none()) {
+                Ok(config) => (config, None, true),
+                Err(error) => (
+                    Config::default(),
+                    Some(format!(
+                        "{error:#}。为保护原文件，自动保存已关闭；可在输出设置中备份并恢复。"
+                    )),
+                    false,
+                ),
+            };
         let gpu = cc.wgpu_render_state.clone().context("需要 wgpu 渲染后端")?;
         let target = RenderTarget::new(&gpu.device, config.output_size);
         let texture = gpu.renderer.write().register_native_texture(

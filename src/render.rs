@@ -63,7 +63,7 @@ pub struct RenderTarget {
 impl RenderTarget {
     pub fn new(device: &wgpu::Device, size: [u32; 2]) -> Self {
         let texture = device.create_texture(&wgpu::TextureDescriptor {
-            label: Some("kage.model.target"),
+            label: Some("ayakage.model.target"),
             size: wgpu::Extent3d {
                 width: size[0],
                 height: size[1],
@@ -114,7 +114,7 @@ impl RenderTarget {
     pub fn read_pixels(&self, device: &wgpu::Device, queue: &wgpu::Queue) -> Result<Vec<u8>> {
         let stride = (self.size[0] * 4).div_ceil(256) * 256;
         let buffer = device.create_buffer(&wgpu::BufferDescriptor {
-            label: Some("kage.readback"),
+            label: Some("ayakage.readback"),
             size: (stride * self.size[1]) as u64,
             usage: wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::MAP_READ,
             mapped_at_creation: false,
@@ -225,11 +225,11 @@ impl Renderer {
         self.transform
             .update_matrix(queue, &self.bounds.matrix(target.size, view));
         let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
-            label: Some("kage.model.encoder"),
+            label: Some("ayakage.model.encoder"),
         });
         {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                label: Some("kage.mask"),
+                label: Some("ayakage.mask"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: self.mask.view(),
                     depth_slice: None,
@@ -250,7 +250,7 @@ impl Renderer {
         }
         {
             let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                label: Some("kage.model"),
+                label: Some("ayakage.model"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: &target.view,
                     depth_slice: None,

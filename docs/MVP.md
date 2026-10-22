@@ -1,4 +1,4 @@
-# Kage Studio 0.1：首个 MVP
+# Ayakage 0.1：首个 MVP
 
 依据 `talk.md`：以 Linux / Wayland 为主要平台，兼容现有 Live2D 模型，完全开源的运行时；长期向 VTube Studio 的使用体验和功能靠拢。首版要完成可以操作、可以接入真实面捕、可以交给 OBS 的直播闭环。
 

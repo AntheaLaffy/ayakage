@@ -126,8 +126,8 @@ jobs:
             pkg-config libwayland-dev libxkbcommon-dev libx11-dev \
             libxcursor-dev libxi-dev libxrandr-dev libegl1-mesa-dev \
             libxkbcommon-x11-0 mesa-vulkan-drivers xvfb xauth python3-pil
-          install -d -m 700 "$RUNNER_TEMP/kage-runtime"
-          printf 'XDG_RUNTIME_DIR=%s/kage-runtime\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          install -d -m 700 "$RUNNER_TEMP/ayakage-runtime"
+          printf 'XDG_RUNTIME_DIR=%s/ayakage-runtime\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
@@ -147,7 +147,7 @@ jobs:
       - name: Verify extracted package, real model, UDP and native windows
         run: |
           /usr/bin/python3 tools/ci_smoke.py \
-            --package dist/kage-studio-*-linux-x86_64.tar.gz \
+            --package dist/ayakage-*-linux-x86_64.tar.gz \
             --model .local/ci-fixtures/assets/models/Haru/Haru.model3.json \
             --output-dir .local/ci-result --max-glibc 2.35 --require-clean
       - name: Upload tested portable archive

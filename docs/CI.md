@@ -30,13 +30,13 @@ GitHub main 分支要求 PR、最新基线上的 GitHub Actions `required` 检�
 策略文件不会自行修改 GitHub 设置。维护者应用 / 审计策略：
 
 ```sh
-gh api --method PUT repos/AntheaLaffy/vtb-in-linux/branches/main/protection \
+gh api --method PUT repos/AntheaLaffy/ayakage/branches/main/protection \
   --input .github/branch-protection.json
-gh api repos/AntheaLaffy/vtb-in-linux/branches/main/protection
-gh api repos/AntheaLaffy/vtb-in-linux/rulesets
+gh api repos/AntheaLaffy/ayakage/branches/main/protection
+gh api repos/AntheaLaffy/ayakage/rulesets
 ```
 
-首次建立标签保护使用 `gh api --method POST repos/AntheaLaffy/vtb-in-linux/rulesets --input .github/tag-rules.json`。已有规则需按其 ID 更新，避免重复创建。`v*` 标签允许新建，禁止改写或删除。
+首次建立标签保护使用 `gh api --method POST repos/AntheaLaffy/ayakage/rulesets --input .github/tag-rules.json`。已有规则需按其 ID 更新，避免重复创建。`v*` 标签允许新建，禁止改写或删除。
 
 Dependabot 每周为 Cargo 与 GitHub Actions 创建更新 PR，统一经过完整门禁，不自动合并。Actions 固定完整提交 SHA。每月检查 Rust 工具链、actionlint 版本与测试样例固定提交；升级时同步工具链文件、矩阵、文档及校验摘要，重新运行全部检查。定时 CI 发现的失败先修复再发布。
 
@@ -49,12 +49,12 @@ Dependabot 每周为 Cargo 与 GitHub Actions 创建更新 PR，统一经过完�
    ```sh
    git switch main
    git pull --ff-only
-   git tag -a v0.1.0 -m 'Kage Studio 0.1.0'
-   git push origin v0.1.0
+   git tag -a v0.1.1 -m '绫影 Ayakage 0.1.1'
+   git push origin v0.1.1
    ```
 
 4. `Release` 校验标签格式、Cargo 版本、更新记录和 main 祖先关系，重新运行完整 CI。全部通过后，下载同一次运行中已经解压验证的压缩包，复核 SHA-256、源码提交与干净状态，再发布 GitHub Release。`0.x` 标为实验性预发布。
-5. 发布资产为 `kage-studio-VERSION-linux-x86_64.tar.gz` 与 `SHA256SUMS`。从 Release 下载后校验、解压并运行 `./kage-studio-linux-x86_64/kage-studio --version`。Ubuntu 22.04 / glibc 2.35 是二进制基线，仍需要系统图形驱动和桌面 Portal。
+5. 发布资产为 `ayakage-VERSION-linux-x86_64.tar.gz` 与 `SHA256SUMS`。从 Release 下载后校验、解压并运行 `./ayakage-linux-x86_64/ayakage --version`。Ubuntu 22.04 / glibc 2.35 是二进制基线，仍需要系统图形驱动和桌面 Portal。
 
 发布工作流只有最终上传 job 获得 `contents: write`，其余检查保持只读权限；不会接收 PR 代码的写权限事件。失败时修复原因，再针对同一标签手动重跑 `Release`；已经发布的版本不覆盖资产，后续修复使用新版本号。
 
@@ -62,7 +62,7 @@ Dependabot 每周为 Cargo 与 GitHub Actions 创建更新 PR，统一经过完�
 
 ```sh
 python3 tools/package.py --archive
-python3 tools/ci_smoke.py --package dist/kage-studio-0.1.0-linux-x86_64.tar.gz \
+python3 tools/ci_smoke.py --package dist/ayakage-0.1.1-linux-x86_64.tar.gz \
   --model /path/to/Haru.model3.json --output-dir .local/ci-local
 ```
 

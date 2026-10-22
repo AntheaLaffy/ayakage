@@ -80,7 +80,7 @@ def main():
         require(len(roots) == 1 and roots[0].is_dir(), "expected one portable directory")
         bundle = roots[0]
         info = json.loads((bundle / "build-info.json").read_text())
-        binary = bundle / "kage-studio"
+        binary = bundle / "ayakage"
         require(digest(binary) == info["binary_sha256"], "binary SHA-256 mismatch")
         require(digest(bundle / "Cargo.lock") == info["cargo_lock_sha256"], "lockfile SHA-256 mismatch")
         require(os.access(binary, os.X_OK), "binary lost executable permission")
@@ -92,7 +92,7 @@ def main():
             require(info["source_commit"] == os.environ.get("GITHUB_SHA"), "wrong source commit")
 
         version = subprocess.check_output([binary, "--version"], text=True).strip()
-        require(version == f'kage-studio {info["version"]}', "wrong executable version")
+        require(version == f'ayakage {info["version"]}', "wrong executable version")
         symbols = subprocess.check_output(["readelf", "--version-info", binary], text=True)
         glibc = max(tuple(map(int, v.split("."))) for v in re.findall(r"GLIBC_([0-9.]+)", symbols))
         if args.max_glibc:

@@ -1,5 +1,7 @@
 # MVP 验证记录
 
+以下本机与 OBS 记录来自 0.1.0（旧名 Kage Studio），保留当时的窗口名称。0.1.1 更名为「绫影 · Ayakage」，当前输出窗口为 `Ayakage · Output`；更名后的发布包由完整 CI 再次检查，结果见 [GitHub Actions](https://github.com/AntheaLaffy/ayakage/actions)。
+
 验证日期：2026-10-22。环境为 Arch Linux / niri，Intel RPL-P 核显。首版范围见 [MVP.md](MVP.md)；本记录只列实际执行结果。
 
 ## 构建与状态逻辑
