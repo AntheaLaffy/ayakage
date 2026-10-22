@@ -71,6 +71,8 @@ python3 tools/package.py --archive
 
 贡献和发布流程见 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [CI 制度](docs/CI.md)，版本变化见 [CHANGELOG.md](CHANGELOG.md)。
 
+纯文档 PR 只运行轻量文件分类与门禁汇总，跳过编译、模型渲染和打包；代码 / 依赖 / 工作流变化运行完整检查。定时任务及版本发布始终运行完整 CI。
+
 ## 接入摄像头
 
 [OpenSeeFace](https://github.com/emilianavt/OpenSeeFace) 独立负责摄像头识别，Kage Studio 接收它的标准二进制 UDP 数据；图像不进入 Kage Studio，也不上传服务器。按照上游目前提供的锁文件安装兼容的 Python 环境：
