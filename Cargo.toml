@@ -1,11 +1,11 @@
 [package]
-name = "kage-studio"
-version = "0.1.0"
+name = "ayakage"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.95"
 description = "An open-source, Linux-first Live2D VTuber studio"
 license = "MIT"
-repository = "https://github.com/AntheaLaffy/vtb-in-linux"
+repository = "https://github.com/AntheaLaffy/ayakage"
 
 [dependencies]
 anyhow = "1.0"

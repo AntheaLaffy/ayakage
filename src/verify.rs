@@ -41,7 +41,7 @@ pub async fn render_test(path: &Path, output: &Path) -> Result<()> {
         .await?;
     let (device, queue) = adapter
         .request_device(&wgpu::DeviceDescriptor {
-            label: Some("kage.verify"),
+            label: Some("ayakage.verify"),
             ..Default::default()
         })
         .await?;

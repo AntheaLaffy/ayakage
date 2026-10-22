@@ -6,7 +6,7 @@
 
 | 任务 | 领域 | Target | Also Check |
 | --- | --- | --- | --- |
-| 主题 / 字体 / 导航 / 追踪面板 | 窗口 | `mod.rs` | 新汉字需更新 `assets/fonts/KageUI.otf` |
+| 主题 / 字体 / 导航 / 追踪面板 | 窗口 | `mod.rs` | 新汉字需更新 `assets/fonts/AyakageUI.otf` |
 | 独立输出与透明背景 | 输出 | `mod.rs` → `show_output` | `pages.rs` 输出设置，`../../render.rs` |
 | 舞台拖动 / 缩放 / 复位 | 舞台 | `pages.rs` → `stage` | `../../render.rs` 的变换 |
 | 映射或手动参数 | 参数 | `pages.rs` → `mappings` | `../../config.rs`, `../../model.rs` |

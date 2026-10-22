@@ -70,7 +70,7 @@ jobs:
           if len(archives) != 1:
               raise SystemExit('Expected exactly one tested archive.')
           with tarfile.open(archives[0]) as archive:
-              info = json.load(archive.extractfile('kage-studio-linux-x86_64/build-info.json'))
+              info = json.load(archive.extractfile('ayakage-linux-x86_64/build-info.json'))
           if info['source_commit'] != os.environ['GITHUB_SHA'] or info['source_dirty']:
               raise SystemExit('Archive must come from this clean tagged commit.')
           if f"v{info['version']}" != os.environ['GITHUB_REF_NAME']:
@@ -87,5 +87,5 @@ jobs:
           flags=()
           if [[ "$GITHUB_REF_NAME" == v0.* ]]; then flags+=(--prerelease); fi
           gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/SHA256SUMS \
-            --verify-tag --target "$GITHUB_SHA" --title "Kage Studio $GITHUB_REF_NAME" \
+            --verify-tag --target "$GITHUB_SHA" --title "Ayakage $GITHUB_REF_NAME" \
             --notes-file "$RUNNER_TEMP/release-notes.md" "${flags[@]}"

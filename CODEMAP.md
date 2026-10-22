@@ -6,7 +6,7 @@ ignore: 见范围与排除项
 
 # 项目导航
 
-Kage Studio 是原生 Rust 应用，从 OpenSeeFace 的 UDP 输入驱动模型参数，生成透明 wgpu 纹理供预览及独立直播窗口使用。
+Ayakage 是原生 Rust 应用，从 OpenSeeFace 的 UDP 输入驱动模型参数，生成透明 wgpu 纹理供预览及独立直播窗口使用。
 
 ## 范围与排除项
 

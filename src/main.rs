@@ -9,9 +9,12 @@ mod verify;
 use anyhow::{Context, Result, bail};
 use std::path::PathBuf;
 
+const PRODUCT_NAME: &str = "绫影 · Ayakage";
+const OUTPUT_TITLE: &str = "Ayakage · Output";
+
 fn main() -> Result<()> {
     env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("warn,kage_studio=info"),
+        env_logger::Env::default().default_filter_or("warn,ayakage=info"),
     )
     .init();
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -27,12 +30,13 @@ fn main() -> Result<()> {
         match args[i].as_str() {
             "--help" | "-h" => {
                 println!(
-                    "Kage Studio 0.1.0 · Linux Live2D VTuber studio\n\n使用方法：kage-studio [选项]\n  --model PATH         打开 .model3.json 或模型目录\n  --output             同时打开独立直播输出窗口\n  --demo               使用明确标注的模拟追踪数据\n  --config PATH        使用独立配置文件\n  --command ACTION     向运行中的应用发送快捷键命令\n  --control-port PORT  本机命令端口（默认 11574）\n  --check-model PATH   检查真实模型文件及其参数\n  --render-test PATH   无窗口 GPU 渲染及追踪驱动验证\n  --output-dir PATH    渲染验证产物目录\n  --screenshot PATH    保存启动后的界面截图\n  --smoke-test         截图完成后退出（配合 --screenshot）\n  --version            显示版本\n\n命令：calibrate, toggle-tracking, reset-view, clear-expression,\n      expression:NAME, motion:GROUP/INDEX"
+                    "{PRODUCT_NAME} {} · Linux Live2D VTuber studio\n\n使用方法：ayakage [选项]\n  --model PATH         打开 .model3.json 或模型目录\n  --output             同时打开独立直播输出窗口\n  --demo               使用明确标注的模拟追踪数据\n  --config PATH        使用独立配置文件\n  --command ACTION     向运行中的应用发送快捷键命令\n  --control-port PORT  本机命令端口（默认 11574）\n  --check-model PATH   检查真实模型文件及其参数\n  --render-test PATH   无窗口 GPU 渲染及追踪驱动验证\n  --output-dir PATH    渲染验证产物目录\n  --screenshot PATH    保存启动后的界面截图\n  --smoke-test         截图完成后退出（配合 --screenshot）\n  --version            显示版本\n\n命令：calibrate, toggle-tracking, reset-view, clear-expression,\n      expression:NAME, motion:GROUP/INDEX",
+                    env!("CARGO_PKG_VERSION")
                 );
                 return Ok(());
             }
             "--version" | "-V" => {
-                println!("kage-studio {}", env!("CARGO_PKG_VERSION"));
+                println!("ayakage {}", env!("CARGO_PKG_VERSION"));
                 return Ok(());
             }
             "--model" => {
@@ -102,18 +106,18 @@ fn main() -> Result<()> {
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Wgpu,
         viewport: egui::ViewportBuilder::default()
-            .with_title("Kage Studio · 虚拟主播工作室")
-            .with_app_id("kage-studio")
+            .with_title(PRODUCT_NAME)
+            .with_app_id("ayakage")
             .with_inner_size([1440.0, 900.0])
             .with_min_inner_size([1160.0, 720.0]),
         ..Default::default()
     };
     eframe::run_native(
-        "Kage Studio",
+        PRODUCT_NAME,
         options,
         Box::new(move |cc| Ok(Box::new(app::Studio::new(cc, launch, control)?))),
     )
-    .map_err(|error| anyhow::anyhow!("无法启动 Kage Studio：{error}"))?;
+    .map_err(|error| anyhow::anyhow!("无法启动 Ayakage：{error}"))?;
     anyhow::ensure!(
         !smoke || smoke_success.load(std::sync::atomic::Ordering::Relaxed),
         "窗口检查未完成或模型加载失败，请查看日志"
