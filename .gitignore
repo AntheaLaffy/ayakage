@@ -1,6 +1,7 @@
 /target/
 /.local/
 /dist/
+/.project-maintenance/
 *.tmp
 __pycache__/
 *.pyc
