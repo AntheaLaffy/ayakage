@@ -200,7 +200,7 @@ dependencies = [
  "image",
  "log",
  "mocari",
- "pollster 0.4.0",
+ "pollster 1.0.1",
  "rfd",
  "serde",
  "serde_json",
